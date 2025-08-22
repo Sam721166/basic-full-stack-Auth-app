@@ -1,0 +1,93 @@
+<html>
+<body>
+    <div>
+        <input id="email1" type="text" placeholder="email">
+        <input id="password1" type="text" placeholder="password">
+        <button onclick="submit1()">submit</button>
+    </div>
+    <br>
+    <div>
+        <input id="email2" type="text" placeholder="email">
+        <input id="password2" type="text" placeholder="password">
+        <button onclick="submit2()">submit</button>
+        <h3>user details :</h3>
+        <h4 id="details1"></h4>
+        <h4 id="details2"></h4>
+        <h4 id="details3"></h4>
+    </div>
+    <button id="logout" onclick="logout1()">logout</button>
+    
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+<script>
+    // sign up request
+    async function submit1(){
+        const email1 = document.getElementById("email1").value
+        const password1 = document.getElementById("password1").value
+
+        const response = await axios.post("http://localhost:3000/signup", {
+            email: email1,
+            password: password1
+        })
+        alert("you're signed in")
+
+        document.getElementById("email1").value = ""
+        document.getElementById("password1").value = ""
+
+
+        document.getElementById("details1").innerHTML = ""
+        document.getElementById("details2").innerHTML = ""
+        document.getElementById("details3").innerHTML = ""
+    }
+
+    // log in request
+    async function submit2(){
+
+        document.getElementById("details1").innerHTML = ""
+        document.getElementById("details2").innerHTML = ""
+        document.getElementById("details3").innerHTML = ""
+ 
+
+        const email2 = document.getElementById("email2").value
+        const password2 = document.getElementById("password2").value
+       
+            const response = await axios.post("http://localhost:3000/login", {
+                email: email2,
+                password: password2
+            }, {withCredentials: true})
+            
+            alert(response.data.msg)
+
+          
+            // user details request 
+            if(response.data.msg === "login succsessful"){
+                const dataResponse = await axios.get("http://localhost:3000/me", {withCredentials: true})
+
+                document.getElementById("details1").innerHTML = "email: " + JSON.stringify(dataResponse.data.user.email) 
+                
+                document.getElementById("details2").innerHTML = "password: " + JSON.stringify(dataResponse.data.user.password) 
+                
+                document.getElementById("details3").innerHTML = "id: " + JSON.stringify(dataResponse.data.user._id)
+
+
+                document.getElementById("email2").value = ""
+                document.getElementById("password2").value = ""
+
+            }
+
+    }
+
+
+    async function logout1(){
+        document.getElementById("details1").innerHTML = ""
+        document.getElementById("details2").innerHTML = ""
+        document.getElementById("details3").innerHTML = ""
+
+        const logout = document.getElementById("logout")
+        const delete1 = await axios.post("http://localhost:3000/logout")
+        alert(delete1.data.msg)
+ 
+    }
+    
+</script>
+</html> 
